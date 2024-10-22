@@ -47,7 +47,15 @@ export class GetOrdersUsecase {
 
       return this.transforOrdersToApiFormat(customersWithOrders);
     } catch (error) {
-      this.logger.error('Erro ao buscar os pedidos', error);
+      this.logger.error(
+        `Erro ao buscar os pedidos ${JSON.stringify({
+          error,
+          params,
+        })}`,
+      );
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
       throw new InternalServerErrorException(
         'Não foi possível buscar os pedidos',
       );
