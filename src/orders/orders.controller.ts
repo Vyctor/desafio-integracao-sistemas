@@ -1,11 +1,13 @@
 import {
   Controller,
+  Get,
   Post,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { OrdersService } from './orders.service';
+import { Paginate, PaginateQuery } from 'nestjs-paginate';
 
 @Controller('orders')
 export class OrdersController {
@@ -37,5 +39,10 @@ export class OrdersController {
       .filter((order) => order);
 
     return this.ordersService.saveOrders(orders);
+  }
+
+  @Get()
+  async getOrders(@Paginate() query: PaginateQuery) {
+    return this.ordersService.getOrders(query);
   }
 }

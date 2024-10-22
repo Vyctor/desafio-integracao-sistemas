@@ -21,7 +21,7 @@ export class OrderProducts {
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
   value: number;
 
-  @ManyToOne(() => Orders, (order) => order.orderId)
+  @ManyToOne(() => Orders, (order) => order.orderProducts)
   @JoinColumn({ name: 'order_id' })
   @Index()
   order: Orders;

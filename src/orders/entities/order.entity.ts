@@ -1,4 +1,12 @@
-import { Entity, PrimaryColumn, Column, OneToMany, Index } from 'typeorm';
+import {
+  Entity,
+  PrimaryColumn,
+  Column,
+  OneToMany,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
+import { Customers } from './customer.entity';
 import { OrderProducts } from './order-products.entity';
 
 @Entity({
@@ -6,22 +14,18 @@ import { OrderProducts } from './order-products.entity';
 })
 export class Orders {
   @PrimaryColumn()
-  orderId: number;
+  id: number;
 
-  @Column({ type: 'integer', nullable: false })
-  @Index()
-  userId: number;
-
-  @Column({ type: 'varchar', length: 45, nullable: false })
-  name: string;
-
-  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   total: number;
 
-  @Column({ type: 'date', nullable: false })
-  @Index()
+  @Column()
   date: Date;
 
-  @OneToMany(() => OrderProducts, (product) => product.order, { cascade: true })
-  products: OrderProducts[];
+  @ManyToOne(() => Customers, (customer) => customer.id)
+  @JoinColumn({ name: 'customer_id' })
+  customer: Customers;
+
+  @OneToMany(() => OrderProducts, (orderProducts) => orderProducts.order)
+  orderProducts: OrderProducts[];
 }
