@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Orders } from './entities/order.entity';
+import { createHash } from 'crypto';
 
 export type FileToJsonContent = Array<{
   userId: number;
@@ -13,13 +14,8 @@ export type FileToJsonContent = Array<{
 }>;
 
 @Injectable()
-export class OrdersService {
-  constructor(
-    @InjectDataSource()
-    private readonly dataSource: DataSource,
-    @InjectRepository(Orders)
-    private readonly ordersRepository: Repository<Orders>,
-  ) {}
+export class FilesService {
+  constructor() {}
 
   transformOrdersFileToJson(file: Express.Multer.File): FileToJsonContent {
     const fileData = file.buffer.toString('utf-8').split('\n');
@@ -43,5 +39,11 @@ export class OrdersService {
     });
     orders.pop();
     return orders;
+  }
+
+  hashOrdersFile(file: Express.Multer.File): string {
+    const hash = createHash('sha256');
+    hash.update(file.buffer);
+    return hash.digest('hex');
   }
 }

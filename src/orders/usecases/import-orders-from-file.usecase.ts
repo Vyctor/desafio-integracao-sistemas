@@ -1,14 +1,16 @@
 import {
+  ConflictException,
   Injectable,
   Logger,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { FileToJsonContent, OrdersService } from '../orders.service';
+import { FileToJsonContent, FilesService } from '../files.service';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager } from 'typeorm';
 import { Customers } from '../entities/customer.entity';
 import { OrderProducts } from '../entities/order-products.entity';
 import { Orders } from '../entities/order.entity';
+import { IntegrationControl } from '../entities/integration-control.entity';
 
 @Injectable()
 export class ImportOrdersFromFileUsecase {
@@ -17,16 +19,31 @@ export class ImportOrdersFromFileUsecase {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
-    private readonly ordersService: OrdersService,
+    private readonly filesService: FilesService,
   ) {}
 
   async execute(file: Express.Multer.File): Promise<void> {
+    this.logger.log('Iniciando a importação do arquivo de pedidos');
+
+    const fileHash = this.filesService.hashOrdersFile(file);
+
+    const fileAlreadyImported = await this.dataSource
+      .getRepository(IntegrationControl)
+      .find({
+        where: {
+          hash: fileHash,
+        },
+      });
+
+    if (fileAlreadyImported.length > 0) {
+      this.logger.error('Arquivo já importado', fileHash, fileAlreadyImported);
+      throw new ConflictException('Arquivo já importado');
+    }
+
+    const data = this.filesService.transformOrdersFileToJson(file);
+    this.logger.log('Arquivo transformado com sucesso');
+
     try {
-      this.logger.log('Iniciando a importação do arquivo de pedidos');
-
-      const data = this.ordersService.transformOrdersFileToJson(file);
-      this.logger.log('Arquivo transformado com sucesso');
-
       await this.dataSource.transaction(async (manager) => {
         const customers = this.makeCustomersData(data, manager);
         const orders = this.makeOrdersData(data, customers, manager);
@@ -41,12 +58,15 @@ export class ImportOrdersFromFileUsecase {
         );
         await manager.save(OrderProducts, orderProducts);
         this.logger.log('Arquivo importado com sucesso');
+
+        await manager.insert(IntegrationControl, {
+          filename: file.originalname,
+          hash: fileHash,
+        });
       });
     } catch (error) {
       this.logger.error('Erro ao importar arquivo', error);
-      throw new UnprocessableEntityException(
-        'Não foi possível importar o arquivo',
-      );
+      throw new UnprocessableEntityException('Erro ao importar arquivo');
     }
   }
 
