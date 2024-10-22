@@ -109,7 +109,7 @@ export class ImportOrdersFromFileUsecase {
     // Create a map for quick lookups
     const ordersMap = new Map<
       number,
-      { id: number; total: number; date: Date; customer: Customers }
+      { id: number; date: Date; customer: Customers }
     >();
 
     data.forEach((item) => {
@@ -117,13 +117,9 @@ export class ImportOrdersFromFileUsecase {
         const customer = customers.find((c) => c.id === item.userId);
         ordersMap.set(item.orderId, {
           id: item.orderId,
-          total: item.value,
           date: item.date,
           customer,
         });
-      } else {
-        const order = ordersMap.get(item.orderId);
-        order.total += item.value;
       }
     });
 
@@ -149,7 +145,7 @@ export class ImportOrdersFromFileUsecase {
       const order = ordersMap.get(item.orderId);
       return manager.create(OrderProducts, {
         productId: item.prodId,
-        value: item.value,
+        value: parseFloat(item.value.toFixed(2)),
         order,
       });
     });

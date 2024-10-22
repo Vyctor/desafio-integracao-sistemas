@@ -16,9 +16,6 @@ export class Orders {
   @PrimaryColumn()
   id: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
-  total: number;
-
   @Column()
   date: Date;
 

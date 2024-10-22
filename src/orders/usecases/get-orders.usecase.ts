@@ -82,12 +82,20 @@ export class GetOrdersUsecase {
         orders: customerWithOrder.order.map((order) => {
           return {
             order_id: order.id,
-            total: order.total,
+            total: parseFloat(
+              order.orderProducts
+                .reduce(
+                  (acc, next) =>
+                    acc + parseFloat(next.value as unknown as string),
+                  0,
+                )
+                .toFixed(2),
+            ),
             date: order.date,
             products: order.orderProducts.map((orderProduct) => {
               return {
                 product_id: orderProduct.productId,
-                value: orderProduct.value,
+                value: parseFloat(orderProduct.value as unknown as string),
               };
             }),
           };
