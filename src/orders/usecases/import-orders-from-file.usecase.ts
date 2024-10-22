@@ -26,18 +26,7 @@ export class ImportOrdersFromFileUsecase {
 
     const fileHash = FilesService.hashOrdersFile(file);
 
-    const fileAlreadyImported = await this.dataSource
-      .getRepository(IntegrationControl)
-      .find({
-        where: {
-          hash: fileHash,
-        },
-      });
-
-    if (fileAlreadyImported.length > 0) {
-      this.logger.error('Arquivo já importado', fileHash, fileAlreadyImported);
-      throw new ConflictException('Arquivo já importado');
-    }
+    await this.validateIfFileAlreadyImported(fileHash);
 
     const data = FilesService.transformOrdersFileToJson(file);
     this.logger.log('Arquivo transformado com sucesso');
@@ -69,12 +58,30 @@ export class ImportOrdersFromFileUsecase {
     }
   }
 
+  private async validateIfFileAlreadyImported(fileHash: string): Promise<void> {
+    const fileAlreadyImported = await this.dataSource
+      .getRepository(IntegrationControl)
+      .findOne({
+        where: {
+          hash: fileHash,
+        },
+      });
+
+    if (fileAlreadyImported) {
+      const errorMessage = `Arquivo já importado na data de ${fileAlreadyImported.createdAt.toISOString()} com o nome de ${fileAlreadyImported.filename}`;
+
+      this.logger.error(errorMessage, fileAlreadyImported);
+      throw new ConflictException(errorMessage);
+    }
+
+    this.logger.log('Arquivo não importado anteriormente');
+  }
+
   private makeCustomersData(data: FileToJsonContent, manager: EntityManager) {
     this.logger.log('Criando dados de clientes');
     const uniqueCustomers = data
       .map((item) => item.userId)
-      .filter((value, index, self) => self.indexOf(value) === index)
-      .sort((a, b) => a - b);
+      .filter((value, index, self) => self.indexOf(value) === index);
 
     return uniqueCustomers.map((userId) => {
       return manager.create(Customers, {
@@ -92,8 +99,7 @@ export class ImportOrdersFromFileUsecase {
     this.logger.log('Criando dados de pedidos');
     const uniqueOrders = data
       .map((item) => item.orderId)
-      .filter((value, index, self) => self.indexOf(value) === index)
-      .sort((a, b) => a - b);
+      .filter((value, index, self) => self.indexOf(value) === index);
 
     return uniqueOrders.map((orderId) => {
       return manager.create(Orders, {
@@ -117,14 +123,12 @@ export class ImportOrdersFromFileUsecase {
     manager: EntityManager,
   ) {
     this.logger.log('Criando dados de produtos dos pedidos');
-    return data
-      .sort((a, b) => a.orderId - b.orderId)
-      .map((item) => {
-        return manager.create(OrderProducts, {
-          productId: item.prodId,
-          value: item.value,
-          order: orders.find((order) => order.id === item.orderId),
-        });
+    return data.map((item) => {
+      return manager.create(OrderProducts, {
+        productId: item.prodId,
+        value: item.value,
+        order: orders.find((order) => order.id === item.orderId),
       });
+    });
   }
 }
