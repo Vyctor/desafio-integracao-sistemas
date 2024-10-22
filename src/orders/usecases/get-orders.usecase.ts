@@ -8,6 +8,20 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Repository } from 'typeorm';
 import { Customers } from '../entities/customer.entity';
 
+export type GetOrdersUsecaseOutput = Array<{
+  user_id: number;
+  name: string;
+  orders: Array<{
+    order_id: number;
+    total: string;
+    date: string;
+    products: Array<{
+      product_id: number;
+      value: string;
+    }>;
+  }>;
+}>;
+
 @Injectable()
 export class GetOrdersUsecase {
   private readonly logger = new Logger(GetOrdersUsecase.name);
@@ -21,7 +35,7 @@ export class GetOrdersUsecase {
     order_id: number;
     min_date: string;
     max_date: string;
-  }) {
+  }): Promise<GetOrdersUsecaseOutput> {
     try {
       const customersWithOrders = await this.customersRepository.find({
         relations: ['order', 'order.orderProducts'],
@@ -62,19 +76,9 @@ export class GetOrdersUsecase {
     }
   }
 
-  private transforOrdersToApiFormat(customers: Customers[]): Array<{
-    user_id: number;
-    name: string;
-    orders: Array<{
-      order_id: number;
-      total: number;
-      date: Date;
-      products: Array<{
-        product_id: number;
-        value: number;
-      }>;
-    }>;
-  }> {
+  private transforOrdersToApiFormat(
+    customers: Customers[],
+  ): GetOrdersUsecaseOutput {
     return customers.map((customerWithOrder) => {
       return {
         user_id: customerWithOrder.id,
@@ -82,20 +86,23 @@ export class GetOrdersUsecase {
         orders: customerWithOrder.order.map((order) => {
           return {
             order_id: order.id,
-            total: parseFloat(
-              order.orderProducts
-                .reduce(
-                  (acc, next) =>
-                    acc + parseFloat(next.value as unknown as string),
-                  0,
-                )
-                .toFixed(2),
-            ),
-            date: order.date,
+            total: order.orderProducts
+              .reduce(
+                (acc, next) =>
+                  acc + parseFloat(next.value as unknown as string),
+                0,
+              )
+              .toFixed(2),
+            date:
+              order.date.getFullYear() +
+              '-' +
+              (order.date.getMonth() + 1) +
+              '-' +
+              order.date.getDate(),
             products: order.orderProducts.map((orderProduct) => {
               return {
                 product_id: orderProduct.productId,
-                value: parseFloat(orderProduct.value as unknown as string),
+                value: orderProduct.value as unknown as string,
               };
             }),
           };
