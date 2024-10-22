@@ -41,4 +41,8 @@ export class FilesService {
     hash.update(file.buffer);
     return hash.digest('hex');
   }
+
+  static getFileExtension(file: Express.Multer.File): string {
+    return file.originalname.split('.').pop();
+  }
 }

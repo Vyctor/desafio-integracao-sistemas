@@ -24,6 +24,14 @@ export class ImportOrdersFromFileUsecase {
   async execute(file: Express.Multer.File): Promise<void> {
     this.logger.log('Iniciando a importação do arquivo de pedidos');
 
+    const fileExtension = FilesService.getFileExtension(file);
+
+    if (fileExtension !== 'txt') {
+      throw new UnprocessableEntityException(
+        'Formato de arquivo inválido. Aceito apenas arquivos .txt',
+      );
+    }
+
     const fileHash = FilesService.hashOrdersFile(file);
 
     await this.validateIfFileAlreadyImported(fileHash);
