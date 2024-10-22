@@ -33,7 +33,23 @@ export class GetOrdersUsecase {
       },
     });
 
-    return customersWithOrders.map((customerWithOrder) => {
+    return this.transforOrdersToApiFormat(customersWithOrders);
+  }
+
+  private transforOrdersToApiFormat(customers: Customers[]): Array<{
+    user_id: number;
+    name: string;
+    orders: Array<{
+      order_id: number;
+      total: number;
+      date: Date;
+      products: Array<{
+        product_id: number;
+        value: number;
+      }>;
+    }>;
+  }> {
+    return customers.map((customerWithOrder) => {
       return {
         user_id: customerWithOrder.id,
         name: customerWithOrder.name,

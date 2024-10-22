@@ -21,6 +21,12 @@ import { EnvironmentService } from './config/environment.service';
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: environmentService.NODE_ENV === 'local',
         logging: false,
+        pool: {
+          max: 10,
+          min: 2,
+          acquire: 30000,
+          idle: 10000,
+        },
       }),
     }),
   ],
