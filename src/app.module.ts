@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { OrdersModule } from './orders/orders.module';
-import { OrdersController } from './orders/orders.controller';
 import { ConfigModule } from './config/config.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EnvironmentService } from './config/environment.service';
@@ -25,7 +24,7 @@ import { EnvironmentService } from './config/environment.service';
       }),
     }),
   ],
-  controllers: [OrdersController],
+  controllers: [],
   providers: [],
 })
 export class AppModule {}
