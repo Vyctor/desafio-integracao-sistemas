@@ -1,14 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Orders } from '../entities/order.entity';
 import { Between, Repository } from 'typeorm';
 import { Customers } from '../entities/customer.entity';
 
 @Injectable()
 export class GetOrdersUsecase {
   constructor(
-    @InjectRepository(Orders)
-    private readonly ordersRepository: Repository<Orders>,
     @InjectRepository(Customers)
     private readonly customersRepository: Repository<Customers>,
   ) {}

@@ -4,7 +4,7 @@ import {
   Logger,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { FileToJsonContent, FilesService } from '../files.service';
+import { FileToJsonContent, FilesService } from '../../utils/files.service';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager } from 'typeorm';
 import { Customers } from '../entities/customer.entity';
@@ -19,13 +19,12 @@ export class ImportOrdersFromFileUsecase {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
-    private readonly filesService: FilesService,
   ) {}
 
   async execute(file: Express.Multer.File): Promise<void> {
     this.logger.log('Iniciando a importação do arquivo de pedidos');
 
-    const fileHash = this.filesService.hashOrdersFile(file);
+    const fileHash = FilesService.hashOrdersFile(file);
 
     const fileAlreadyImported = await this.dataSource
       .getRepository(IntegrationControl)
@@ -40,7 +39,7 @@ export class ImportOrdersFromFileUsecase {
       throw new ConflictException('Arquivo já importado');
     }
 
-    const data = this.filesService.transformOrdersFileToJson(file);
+    const data = FilesService.transformOrdersFileToJson(file);
     this.logger.log('Arquivo transformado com sucesso');
 
     try {

@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { OrdersController } from './orders.controller';
-import { FilesService } from './files.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Orders } from './entities/order.entity';
@@ -20,7 +19,7 @@ import { IntegrationControl } from './entities/integration-control.entity';
       IntegrationControl,
     ]),
   ],
-  providers: [FilesService, ImportOrdersFromFileUsecase, GetOrdersUsecase],
+  providers: [ImportOrdersFromFileUsecase, GetOrdersUsecase],
   controllers: [OrdersController],
   exports: [],
 })
