@@ -70,7 +70,12 @@ export class ImportOrdersFromFileUsecase {
     if (fileAlreadyImported) {
       const errorMessage = `Arquivo já importado na data de ${fileAlreadyImported.createdAt.toISOString()} com o nome de ${fileAlreadyImported.filename}`;
 
-      this.logger.error(errorMessage, fileAlreadyImported);
+      this.logger.error(
+        JSON.stringify({
+          error: errorMessage,
+          file: fileAlreadyImported,
+        }),
+      );
       throw new ConflictException(errorMessage);
     }
 
