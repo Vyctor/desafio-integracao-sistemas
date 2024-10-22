@@ -33,7 +33,7 @@ export class ImportOrdersFromFileUsecase {
 
     try {
       await this.dataSource.transaction(async (manager) => {
-        const customers = this.makeCustomersData(data, manager);
+        const customers = this.makeCustomersData(data);
         const orders = this.makeOrdersData(data, customers, manager);
         const orderProducts = this.makeOrderProductsData(data, orders, manager);
 
@@ -82,18 +82,21 @@ export class ImportOrdersFromFileUsecase {
     this.logger.log('Arquivo não importado anteriormente');
   }
 
-  private makeCustomersData(data: FileToJsonContent, manager: EntityManager) {
+  private makeCustomersData(data: FileToJsonContent) {
     this.logger.log('Criando dados de clientes');
-    const uniqueCustomers = data
-      .map((item) => item.userId)
-      .filter((value, index, self) => self.indexOf(value) === index);
 
-    return uniqueCustomers.map((userId) => {
-      return manager.create(Customers, {
-        id: userId,
-        name: data.find((item) => item.userId === userId).name,
-      });
+    // Create a map for quick lookups
+    const customerData = new Map<number, { id: number; name: string }>();
+
+    data.forEach((item) => {
+      if (!customerData.has(item.userId)) {
+        customerData.set(item.userId, { id: item.userId, name: item.name });
+      }
     });
+
+    return Array.from(customerData.values()).map((customer) =>
+      this.dataSource.manager.create(Customers, customer),
+    );
   }
 
   private makeOrdersData(
@@ -102,24 +105,31 @@ export class ImportOrdersFromFileUsecase {
     manager: EntityManager,
   ) {
     this.logger.log('Criando dados de pedidos');
-    const uniqueOrders = data
-      .map((item) => item.orderId)
-      .filter((value, index, self) => self.indexOf(value) === index);
 
-    return uniqueOrders.map((orderId) => {
-      return manager.create(Orders, {
-        id: orderId,
-        total: data
-          .filter((item) => item.orderId === orderId)
-          .reduce((acc, item) => acc + item.value, 0),
-        date: data.find((item) => item.orderId === orderId).date,
-        customer: customers.find(
-          (customer) =>
-            customer.id ===
-            data.find((item) => item.orderId === orderId).userId,
-        ),
-      });
+    // Create a map for quick lookups
+    const ordersMap = new Map<
+      number,
+      { id: number; total: number; date: Date; customer: Customers }
+    >();
+
+    data.forEach((item) => {
+      if (!ordersMap.has(item.orderId)) {
+        const customer = customers.find((c) => c.id === item.userId);
+        ordersMap.set(item.orderId, {
+          id: item.orderId,
+          total: item.value,
+          date: item.date,
+          customer,
+        });
+      } else {
+        const order = ordersMap.get(item.orderId);
+        order.total += item.value;
+      }
     });
+
+    return Array.from(ordersMap.values()).map((order) =>
+      manager.create(Orders, order),
+    );
   }
 
   private makeOrderProductsData(
@@ -128,11 +138,19 @@ export class ImportOrdersFromFileUsecase {
     manager: EntityManager,
   ) {
     this.logger.log('Criando dados de produtos dos pedidos');
+
+    // Create order ID map for quick lookups
+    const ordersMap = new Map<number, Orders>();
+    orders.forEach((order) => {
+      ordersMap.set(order.id, order);
+    });
+
     return data.map((item) => {
+      const order = ordersMap.get(item.orderId);
       return manager.create(OrderProducts, {
         productId: item.prodId,
         value: item.value,
-        order: orders.find((order) => order.id === item.orderId),
+        order,
       });
     });
   }
