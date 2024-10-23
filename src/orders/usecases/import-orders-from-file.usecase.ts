@@ -93,7 +93,6 @@ export class ImportOrdersFromFileUsecase {
   private makeCustomersData(data: FileToJsonContent) {
     this.logger.log('Criando dados de clientes');
 
-    // Create a map for quick lookups
     const customerData = new Map<number, { id: number; name: string }>();
 
     data.forEach((item) => {
@@ -114,7 +113,6 @@ export class ImportOrdersFromFileUsecase {
   ) {
     this.logger.log('Criando dados de pedidos');
 
-    // Create a map for quick lookups
     const ordersMap = new Map<
       number,
       { id: number; date: Date; customer: Customers }
@@ -143,7 +141,6 @@ export class ImportOrdersFromFileUsecase {
   ) {
     this.logger.log('Criando dados de produtos dos pedidos');
 
-    // Create order ID map for quick lookups
     const ordersMap = new Map<number, Orders>();
     orders.forEach((order) => {
       ordersMap.set(order.id, order);
