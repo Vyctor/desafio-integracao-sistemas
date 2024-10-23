@@ -15,7 +15,7 @@ import { IntegrationControl } from '../entities/integration-control.entity';
 @Injectable()
 export class ImportOrdersFromFileUsecase {
   private readonly logger = new Logger(ImportOrdersFromFileUsecase.name);
-  private readonly batchSize = 5000;
+  private readonly batchSize = 500;
 
   constructor(
     @InjectDataSource()
