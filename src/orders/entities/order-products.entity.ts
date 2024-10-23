@@ -11,6 +11,7 @@ import { Orders } from './order.entity';
 @Entity({
   name: 'order_products',
 })
+@Index(['productId', 'order'])
 export class OrderProducts {
   @PrimaryGeneratedColumn()
   id: number;
@@ -23,6 +24,5 @@ export class OrderProducts {
 
   @ManyToOne(() => Orders, (order) => order.orderProducts)
   @JoinColumn({ name: 'order_id' })
-  @Index()
   order: Orders;
 }

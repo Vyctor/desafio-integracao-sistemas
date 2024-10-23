@@ -20,7 +20,7 @@ import { EnvironmentService } from './config/environment.service';
         password: environmentService.DB_PASS,
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: environmentService.NODE_ENV === 'local',
-        logging: false,
+        logging: true,
         pool: {
           max: 10,
           min: 2,

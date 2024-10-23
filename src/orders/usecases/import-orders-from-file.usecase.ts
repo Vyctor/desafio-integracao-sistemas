@@ -63,8 +63,35 @@ export class ImportOrdersFromFileUsecase {
           }
         });
 
-        await manager.save(Customers, Array.from(customerMap.values()));
-        await manager.save(Orders, Array.from(orderMap.values()));
+        const chunkedCustomersData = Array.from(customerMap.values()).reduce(
+          (acc, curr) => {
+            if (acc[acc.length - 1].length === 1000) {
+              acc.push([]);
+            }
+            acc[acc.length - 1].push(curr);
+            return acc;
+          },
+          [[]],
+        );
+
+        await Promise.all(
+          chunkedCustomersData.map((chunk) => manager.save(Customers, chunk)),
+        );
+
+        const chumkedOrdersData = Array.from(orderMap.values()).reduce(
+          (acc, curr) => {
+            if (acc[acc.length - 1].length === 1000) {
+              acc.push([]);
+            }
+            acc[acc.length - 1].push(curr);
+            return acc;
+          },
+          [[]],
+        );
+
+        await Promise.all(
+          chumkedOrdersData.map((chunk) => manager.save(Orders, chunk)),
+        );
 
         const orderProducts = data.map((item) =>
           manager.create(OrderProducts, {
@@ -73,7 +100,23 @@ export class ImportOrdersFromFileUsecase {
             order: orderMap.get(item.orderId),
           }),
         );
-        await manager.save(OrderProducts, orderProducts);
+
+        const chumkedOrderProductsData = orderProducts.reduce(
+          (acc, curr) => {
+            if (acc[acc.length - 1].length === 1000) {
+              acc.push([]);
+            }
+            acc[acc.length - 1].push(curr);
+            return acc;
+          },
+          [[]],
+        );
+
+        await Promise.all(
+          chumkedOrderProductsData.map((chunk) =>
+            manager.save(OrderProducts, chunk),
+          ),
+        );
 
         this.logger.log('Arquivo importado com sucesso');
 

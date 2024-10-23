@@ -7,6 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Repository } from 'typeorm';
 import { Customers } from '../entities/customer.entity';
+import { ApiBody } from '@nestjs/swagger';
 
 export type GetOrdersUsecaseOutput = Array<{
   user_id: number;

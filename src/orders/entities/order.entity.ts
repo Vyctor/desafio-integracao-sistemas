@@ -5,6 +5,7 @@ import {
   OneToMany,
   JoinColumn,
   ManyToOne,
+  Index,
 } from 'typeorm';
 import { Customers } from './customer.entity';
 import { OrderProducts } from './order-products.entity';
@@ -12,6 +13,8 @@ import { OrderProducts } from './order-products.entity';
 @Entity({
   name: 'orders',
 })
+//sort desc
+@Index(['date'])
 export class Orders {
   @PrimaryColumn()
   id: number;
