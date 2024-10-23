@@ -22,8 +22,8 @@ import { EnvironmentService } from './config/environment.service';
         synchronize: environmentService.NODE_ENV === 'local',
         logging: environmentService.NODE_ENV === 'local',
         pool: {
-          max: 10,
-          min: 2,
+          max: 25,
+          min: 5,
           acquire: 30000,
           idle: 10000,
         },
