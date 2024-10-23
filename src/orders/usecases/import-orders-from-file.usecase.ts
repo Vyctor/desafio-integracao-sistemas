@@ -4,9 +4,9 @@ import {
   Logger,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { FileToJsonContent, FilesService } from '../../utils/files.service';
+import { FilesService } from '../../utils/files.service';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { Customers } from '../entities/customer.entity';
 import { OrderProducts } from '../entities/order-products.entity';
 import { Orders } from '../entities/order.entity';
@@ -41,18 +41,40 @@ export class ImportOrdersFromFileUsecase {
 
     try {
       await this.dataSource.transaction(async (manager) => {
-        const customers = this.makeCustomersData(data);
-        const orders = this.makeOrdersData(data, customers, manager);
-        const orderProducts = this.makeOrderProductsData(data, orders, manager);
+        const customerMap = new Map<number, Customers>();
+        const orderMap = new Map<number, Orders>();
 
-        this.logger.log('Salvando dados de clientes no banco de dados');
-        await manager.save(Customers, customers);
-        this.logger.log('Salvando dados de pedidos no banco de dados');
-        await manager.save(Orders, orders);
-        this.logger.log(
-          'Salvando dados de produtos dos pedidos no banco de dados',
+        data.forEach((item) => {
+          if (!customerMap.has(item.userId)) {
+            const customer = manager.create(Customers, {
+              id: item.userId,
+              name: item.name,
+            });
+            customerMap.set(item.userId, customer);
+          }
+
+          if (!orderMap.has(item.orderId)) {
+            const order = manager.create(Orders, {
+              id: item.orderId,
+              date: item.date,
+              customer: customerMap.get(item.userId),
+            });
+            orderMap.set(item.orderId, order);
+          }
+        });
+
+        await manager.save(Customers, Array.from(customerMap.values()));
+        await manager.save(Orders, Array.from(orderMap.values()));
+
+        const orderProducts = data.map((item) =>
+          manager.create(OrderProducts, {
+            productId: item.prodId,
+            value: parseFloat(item.value.toFixed(2)),
+            order: orderMap.get(item.orderId),
+          }),
         );
         await manager.save(OrderProducts, orderProducts);
+
         this.logger.log('Arquivo importado com sucesso');
 
         await manager.insert(IntegrationControl, {
@@ -88,71 +110,5 @@ export class ImportOrdersFromFileUsecase {
     }
 
     this.logger.log('Arquivo não importado anteriormente');
-  }
-
-  private makeCustomersData(data: FileToJsonContent) {
-    this.logger.log('Criando dados de clientes');
-
-    const customerData = new Map<number, { id: number; name: string }>();
-
-    data.forEach((item) => {
-      if (!customerData.has(item.userId)) {
-        customerData.set(item.userId, { id: item.userId, name: item.name });
-      }
-    });
-
-    return Array.from(customerData.values()).map((customer) =>
-      this.dataSource.manager.create(Customers, customer),
-    );
-  }
-
-  private makeOrdersData(
-    data: FileToJsonContent,
-    customers: Customers[],
-    manager: EntityManager,
-  ) {
-    this.logger.log('Criando dados de pedidos');
-
-    const ordersMap = new Map<
-      number,
-      { id: number; date: Date; customer: Customers }
-    >();
-
-    data.forEach((item) => {
-      if (!ordersMap.has(item.orderId)) {
-        const customer = customers.find((c) => c.id === item.userId);
-        ordersMap.set(item.orderId, {
-          id: item.orderId,
-          date: item.date,
-          customer,
-        });
-      }
-    });
-
-    return Array.from(ordersMap.values()).map((order) =>
-      manager.create(Orders, order),
-    );
-  }
-
-  private makeOrderProductsData(
-    data: FileToJsonContent,
-    orders: Orders[],
-    manager: EntityManager,
-  ) {
-    this.logger.log('Criando dados de produtos dos pedidos');
-
-    const ordersMap = new Map<number, Orders>();
-    orders.forEach((order) => {
-      ordersMap.set(order.id, order);
-    });
-
-    return data.map((item) => {
-      const order = ordersMap.get(item.orderId);
-      return manager.create(OrderProducts, {
-        productId: item.prodId,
-        value: parseFloat(item.value.toFixed(2)),
-        order,
-      });
-    });
   }
 }
