@@ -32,20 +32,23 @@ export class GetOrdersUsecase {
     private readonly customersRepository: Repository<Customers>,
   ) {}
 
-  public async execute(params: {
-    order_id: number;
-    min_date: string;
-    max_date: string;
+  public async execute(params?: {
+    order_id?: number;
+    min_date?: string;
+    max_date?: string;
   }): Promise<GetOrdersUsecaseOutput> {
     try {
       const customersWithOrders = await this.customersRepository.find({
         relations: ['order', 'order.orderProducts'],
         where: {
           order: {
-            id: params.order_id ? params.order_id : null,
+            id: params?.order_id ? params.order_id : null,
             date:
-              params.min_date && params.max_date
-                ? Between(new Date(params.min_date), new Date(params.max_date))
+              params?.min_date && params?.max_date
+                ? Between(
+                    new Date(params?.min_date),
+                    new Date(params?.max_date),
+                  )
                 : null,
           },
         },
