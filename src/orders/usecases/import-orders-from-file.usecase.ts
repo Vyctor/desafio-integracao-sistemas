@@ -15,6 +15,7 @@ import { IntegrationControl } from '../entities/integration-control.entity';
 @Injectable()
 export class ImportOrdersFromFileUsecase {
   private readonly logger = new Logger(ImportOrdersFromFileUsecase.name);
+  private readonly batchSize = 5000;
 
   constructor(
     @InjectDataSource()
@@ -65,7 +66,7 @@ export class ImportOrdersFromFileUsecase {
 
         const chunkedCustomersData = Array.from(customerMap.values()).reduce(
           (acc, curr) => {
-            if (acc[acc.length - 1].length === 1000) {
+            if (acc[acc.length - 1].length === this.batchSize) {
               acc.push([]);
             }
             acc[acc.length - 1].push(curr);
@@ -80,7 +81,7 @@ export class ImportOrdersFromFileUsecase {
 
         const chumkedOrdersData = Array.from(orderMap.values()).reduce(
           (acc, curr) => {
-            if (acc[acc.length - 1].length === 1000) {
+            if (acc[acc.length - 1].length === this.batchSize) {
               acc.push([]);
             }
             acc[acc.length - 1].push(curr);
@@ -103,7 +104,7 @@ export class ImportOrdersFromFileUsecase {
 
         const chumkedOrderProductsData = orderProducts.reduce(
           (acc, curr) => {
-            if (acc[acc.length - 1].length === 1000) {
+            if (acc[acc.length - 1].length === this.batchSize) {
               acc.push([]);
             }
             acc[acc.length - 1].push(curr);
