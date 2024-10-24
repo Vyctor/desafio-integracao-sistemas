@@ -35,9 +35,9 @@ export class GetOrdersUsecase {
     order_id?: number;
     min_date?: string;
     max_date?: string;
-  }): Promise<GetOrdersUsecaseOutput> {
+  }): Promise<Customers[]> {
     try {
-      const customersWithOrders = await this.customersRepository.find({
+      const ordersGroupedByCustomer = await this.customersRepository.find({
         relations: ['order', 'order.orderProducts'],
         where: {
           order: {
@@ -58,11 +58,11 @@ export class GetOrdersUsecase {
         },
       });
 
-      if (!customersWithOrders.length) {
+      if (!ordersGroupedByCustomer.length) {
         throw new NotFoundException('Nenhum pedido encontrado');
       }
 
-      return this.transforOrdersToApiFormat(customersWithOrders);
+      return ordersGroupedByCustomer;
     } catch (error) {
       this.logger.error(
         `Erro ao buscar os pedidos ${JSON.stringify({
@@ -77,40 +77,5 @@ export class GetOrdersUsecase {
         'Não foi possível buscar os pedidos',
       );
     }
-  }
-
-  private transforOrdersToApiFormat(
-    customers: Customers[],
-  ): GetOrdersUsecaseOutput {
-    return customers.map((customerWithOrder) => {
-      return {
-        user_id: customerWithOrder.id,
-        name: customerWithOrder.name,
-        orders: customerWithOrder.order.map((order) => {
-          return {
-            order_id: order.id,
-            total: order.orderProducts
-              .reduce(
-                (acc, next) =>
-                  acc + parseFloat(next.value as unknown as string),
-                0,
-              )
-              .toFixed(2),
-            date:
-              order.date.getFullYear() +
-              '-' +
-              (order.date.getMonth() + 1) +
-              '-' +
-              order.date.getDate(),
-            products: order.orderProducts.map((orderProduct) => {
-              return {
-                product_id: orderProduct.productId,
-                value: orderProduct.value as unknown as string,
-              };
-            }),
-          };
-        }),
-      };
-    });
   }
 }

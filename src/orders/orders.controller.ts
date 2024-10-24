@@ -15,6 +15,7 @@ import { GetOrdersDto } from './dtos/get-orders.dto';
 import { ImportOrdersDto } from './dtos/import-orders.dto';
 import { GetOrdersResponseDto } from './dtos/get-orders-response.dto';
 import { FilesService } from 'src/orders/files.service';
+import { OrderTransform } from './transforms/order.transform';
 
 @Controller('orders')
 @ApiTags('orders')
@@ -77,10 +78,12 @@ export class OrdersController {
   ) {
     const { order_id, min_date, max_date } = queryParams;
 
-    return this.getOrdersUsecase.execute({
+    const orders = await this.getOrdersUsecase.execute({
       order_id,
       min_date,
       max_date,
     });
+
+    return OrderTransform.fromDbToApiResponse(orders);
   }
 }

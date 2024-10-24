@@ -66,23 +66,24 @@ describe('GetOrdersUsecase', () => {
       order_id: 2,
     });
 
-    expect(result).toEqual([
+    const expected = [
       {
-        user_id: 1,
+        id: 1,
         name: 'John Doe',
-        orders: [
+        order: [
           {
-            order_id: 1,
-            total: '150.00',
-            date: '2023-1-1',
-            products: [
-              { product_id: 1, value: '100.00' },
-              { product_id: 2, value: '50.00' },
+            id: 1,
+            date: new Date('2023-01-01T03:00:00.000Z'),
+            orderProducts: [
+              { productId: 1, value: '100.00' },
+              { productId: 2, value: '50.00' },
             ],
           },
         ],
       },
-    ]);
+    ];
+
+    expect(result).toEqual(expected);
   });
 
   it('should return all orders when i let the query params empty', async () => {
@@ -115,32 +116,29 @@ describe('GetOrdersUsecase', () => {
 
     const result = await getOrdersUsecase.execute();
 
-    expect(result).toEqual([
-      {
-        user_id: 1,
-        name: 'John Doe',
-        orders: [
-          {
-            order_id: 1,
-            total: '150.00',
-            date: '2023-1-1',
-            products: [
-              { product_id: 1, value: '100.00' },
-              { product_id: 2, value: '50.00' },
-            ],
-          },
-          {
-            order_id: 2,
-            total: '150.00',
-            date: '2023-1-1',
-            products: [
-              { product_id: 3, value: '100.00' },
-              { product_id: 4, value: '50.00' },
-            ],
-          },
-        ],
-      },
-    ]);
+    const expected = {
+      id: 1,
+      name: 'John Doe',
+      order: [
+        {
+          id: 1,
+          date: new Date('2023/01/01'),
+          orderProducts: [
+            { productId: 1, value: '100.00' },
+            { productId: 2, value: '50.00' },
+          ],
+        },
+        {
+          id: 2,
+          date: new Date('2023/01/01'),
+          orderProducts: [
+            { productId: 3, value: '100.00' },
+            { productId: 4, value: '50.00' },
+          ],
+        },
+      ],
+    };
+    expect(result).toEqual([expected]);
   });
 
   it('should return orders in the correct format', async () => {
@@ -165,23 +163,24 @@ describe('GetOrdersUsecase', () => {
 
     const result = await getOrdersUsecase.execute(mockParams);
 
-    expect(result).toEqual([
+    const expected = [
       {
-        user_id: 1,
+        id: 1,
         name: 'John Doe',
-        orders: [
+        order: [
           {
-            order_id: 1,
-            total: '150.00',
-            date: '2023-1-1',
-            products: [
-              { product_id: 1, value: '100.00' },
-              { product_id: 2, value: '50.00' },
+            id: 1,
+            date: new Date('2023-01-01T03:00:00.000Z'),
+            orderProducts: [
+              { productId: 1, value: '100.00' },
+              { productId: 2, value: '50.00' },
             ],
           },
         ],
       },
-    ]);
+    ];
+
+    expect(result).toEqual(expected);
   });
 
   it('should throw NotFoundException if no orders found', async () => {
