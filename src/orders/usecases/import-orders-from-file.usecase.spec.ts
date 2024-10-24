@@ -1,13 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Orders } from '../entities/order.entity';
-import { Customers } from '../entities/customer.entity';
 import { OrderProducts } from '../entities/order-products.entity';
 import { IntegrationControl } from '../entities/integration-control.entity';
 import { ImportOrdersFromFileUsecase } from './import-orders-from-file.usecase';
 import { GetOrdersUsecase } from './get-orders.usecase';
 import { DataSource } from 'typeorm';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { Customers } from '../../customers/entities/customer.entity';
+import { CustomersModule } from '../../customers/customers.module';
 
 describe('ImportOrdersFromFileUsecase unit tests', () => {
   let usecase: ImportOrdersFromFileUsecase;
@@ -16,6 +17,7 @@ describe('ImportOrdersFromFileUsecase unit tests', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
+        CustomersModule,
         TypeOrmModule.forRoot({
           type: 'sqlite',
           database: ':memory:',

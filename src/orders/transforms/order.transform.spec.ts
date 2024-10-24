@@ -1,4 +1,4 @@
-import { Customers } from '../entities/customer.entity';
+import { Customers } from '../../customers/entities/customer.entity';
 import { OrderTransform } from './order.transform';
 
 describe('OrderTransform unit tests', () => {
@@ -27,7 +27,6 @@ describe('OrderTransform unit tests', () => {
       payload as unknown as Customers[],
     );
 
-    console.log(JSON.stringify(result));
     expect(result).toEqual([
       {
         name: 'Nome 388',

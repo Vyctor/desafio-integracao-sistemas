@@ -3,10 +3,10 @@ import { OrdersModule } from './orders/orders.module';
 import { ConfigModule } from './config/config.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EnvironmentService } from './config/environment.service';
+import { CustomersModule } from './customers/customers.module';
 
 @Module({
   imports: [
-    OrdersModule,
     ConfigModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -29,6 +29,8 @@ import { EnvironmentService } from './config/environment.service';
         },
       }),
     }),
+    OrdersModule,
+    CustomersModule,
   ],
   controllers: [],
   providers: [],

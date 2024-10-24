@@ -7,8 +7,8 @@ import {
   ManyToOne,
   Index,
 } from 'typeorm';
-import { Customers } from './customer.entity';
 import { OrderProducts } from './order-products.entity';
+import { Customers } from '../../customers/entities/customer.entity';
 
 @Entity({
   name: 'orders',

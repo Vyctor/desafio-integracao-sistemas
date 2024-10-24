@@ -4,9 +4,8 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Repository } from 'typeorm';
-import { Customers } from '../entities/customer.entity';
+import { Customers } from '../../customers/entities/customer.entity';
+import { CustomersRepository } from '../../customers/customers.repository';
 
 export type GetOrdersUsecaseOutput = Array<{
   user_id: number;
@@ -26,10 +25,7 @@ export type GetOrdersUsecaseOutput = Array<{
 export class GetOrdersUsecase {
   private readonly logger = new Logger(GetOrdersUsecase.name);
 
-  constructor(
-    @InjectRepository(Customers)
-    private readonly customersRepository: Repository<Customers>,
-  ) {}
+  constructor(private readonly customersRepository: CustomersRepository) {}
 
   public async execute(params?: {
     order_id?: number;
@@ -37,26 +33,8 @@ export class GetOrdersUsecase {
     max_date?: string;
   }): Promise<Customers[]> {
     try {
-      const ordersGroupedByCustomer = await this.customersRepository.find({
-        relations: ['order', 'order.orderProducts'],
-        where: {
-          order: {
-            id: params?.order_id ? params.order_id : null,
-            date:
-              params?.min_date && params?.max_date
-                ? Between(
-                    new Date(params?.min_date),
-                    new Date(params?.max_date),
-                  )
-                : null,
-          },
-        },
-        order: {
-          order: {
-            date: 'DESC',
-          },
-        },
-      });
+      const ordersGroupedByCustomer =
+        await this.customersRepository.findOrdersByCustomer(params);
 
       if (!ordersGroupedByCustomer.length) {
         throw new NotFoundException('Nenhum pedido encontrado');

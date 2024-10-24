@@ -1,20 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Customers } from '../entities/customer.entity';
 import { GetOrdersUsecase } from './get-orders.usecase';
 import {
   NotFoundException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { CustomersRepository } from '../../customers/customers.repository';
 
 const mockCustomerRepository = () => ({
-  find: jest.fn(),
+  findOrdersByCustomer: jest.fn(),
 });
 
 describe('GetOrdersUsecase', () => {
   let getOrdersUsecase: GetOrdersUsecase;
-  let customersRepository: Repository<Customers>;
+  let customersRepository: CustomersRepository;
   const mockParams = {
     order_id: 1,
     min_date: '2023-01-01',
@@ -26,16 +24,14 @@ describe('GetOrdersUsecase', () => {
       providers: [
         GetOrdersUsecase,
         {
-          provide: getRepositoryToken(Customers),
+          provide: CustomersRepository,
           useFactory: mockCustomerRepository,
         },
       ],
     }).compile();
 
     getOrdersUsecase = module.get<GetOrdersUsecase>(GetOrdersUsecase);
-    customersRepository = module.get<Repository<Customers>>(
-      getRepositoryToken(Customers),
-    );
+    customersRepository = module.get<CustomersRepository>(CustomersRepository);
   });
 
   it('should be defined', () => {
@@ -60,7 +56,9 @@ describe('GetOrdersUsecase', () => {
       },
     ];
 
-    customersRepository.find = jest.fn().mockResolvedValue(mockCustomers);
+    customersRepository.findOrdersByCustomer = jest
+      .fn()
+      .mockResolvedValue(mockCustomers);
 
     const result = await getOrdersUsecase.execute({
       order_id: 2,
@@ -112,7 +110,9 @@ describe('GetOrdersUsecase', () => {
       },
     ];
 
-    customersRepository.find = jest.fn().mockResolvedValue(mockCustomers);
+    customersRepository.findOrdersByCustomer = jest
+      .fn()
+      .mockResolvedValue(mockCustomers);
 
     const result = await getOrdersUsecase.execute();
 
@@ -159,7 +159,9 @@ describe('GetOrdersUsecase', () => {
       },
     ];
 
-    customersRepository.find = jest.fn().mockResolvedValue(mockCustomers);
+    customersRepository.findOrdersByCustomer = jest
+      .fn()
+      .mockResolvedValue(mockCustomers);
 
     const result = await getOrdersUsecase.execute(mockParams);
 
@@ -184,7 +186,7 @@ describe('GetOrdersUsecase', () => {
   });
 
   it('should throw NotFoundException if no orders found', async () => {
-    customersRepository.find = jest.fn().mockResolvedValue([]);
+    customersRepository.findOrdersByCustomer = jest.fn().mockResolvedValue([]);
 
     await expect(getOrdersUsecase.execute(mockParams)).rejects.toThrow(
       NotFoundException,
@@ -192,7 +194,7 @@ describe('GetOrdersUsecase', () => {
   });
 
   it('should log error and throw InternalServerErrorException on failure', async () => {
-    customersRepository.find = jest
+    customersRepository.findOrdersByCustomer = jest
       .fn()
       .mockRejectedValue(new Error('Some error'));
 

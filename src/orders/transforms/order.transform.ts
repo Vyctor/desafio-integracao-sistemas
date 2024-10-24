@@ -1,4 +1,4 @@
-import { Customers } from '../entities/customer.entity';
+import { Customers } from '../../customers/entities/customer.entity';
 
 export class OrderTransform {
   public static fromDbToApiResponse(ordersGroupedByCustomer: Customers[]) {
