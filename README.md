@@ -42,3 +42,17 @@ Para importar o arquivo de pedidos, é necessário realizar uma requisição POS
 ## Documentação da API
 
 É possível acessar a documentação da API através do endpoint `http://localhost:3000/swagger`, que possui as rotas e os parâmetros de entrada e saída da aplicação.
+
+## Testes automatizados
+
+Para executar os testes automatizados, execute o comando abaixo:
+
+```bash
+npm run test
+```
+
+Para obter a cobertura de testes, execute o comando abaixo:
+
+```bash
+npm run test:cov
+```

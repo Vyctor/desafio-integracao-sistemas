@@ -22,9 +22,9 @@ import { EnvironmentService } from './config/environment.service';
         synchronize: true,
         logging: false,
         pool: {
-          max: 30,
+          max: 20,
           min: 10,
-          acquire: 10000,
+          acquire: 30000,
           idle: 10000,
         },
       }),

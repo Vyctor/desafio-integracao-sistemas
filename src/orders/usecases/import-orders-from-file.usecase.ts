@@ -23,7 +23,7 @@ export type ImportOrdersFromFileUsecaseInput = {
 @Injectable()
 export class ImportOrdersFromFileUsecase {
   private readonly logger = new Logger(ImportOrdersFromFileUsecase.name);
-  private readonly batchSize = 500;
+  private readonly batchSize = 1000;
 
   constructor(
     @InjectDataSource()
