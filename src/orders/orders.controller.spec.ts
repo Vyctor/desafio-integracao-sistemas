@@ -20,7 +20,7 @@ describe('OrdersController', () => {
   const mockFile = {
     buffer: readFileSync(
       join(__dirname, '..', '..', '__tests__', 'files', 'unit_tests.txt'),
-    ), // Lê o arquivo na raiz do projeto
+    ),
     originalname: 'unit_tests.txt',
   };
 

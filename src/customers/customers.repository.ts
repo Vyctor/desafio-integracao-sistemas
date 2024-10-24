@@ -10,6 +10,14 @@ export class CustomersRepository {
     private readonly customersRepository: Repository<Customers>,
   ) {}
 
+  create(params: { id: number; name: string }) {
+    const { id, name } = params;
+    return this.customersRepository.create({
+      id: id,
+      name: name,
+    });
+  }
+
   async findOrdersByCustomer(params: {
     order_id?: number;
     min_date?: string;

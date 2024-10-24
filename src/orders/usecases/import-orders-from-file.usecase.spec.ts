@@ -9,6 +9,8 @@ import { DataSource } from 'typeorm';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Customers } from '../../customers/entities/customer.entity';
 import { CustomersModule } from '../../customers/customers.module';
+import { OrderProductsRepository } from '../repositories/order-products.repository';
+import { OrdersRepository } from '../repositories/orders.repository';
 
 describe('ImportOrdersFromFileUsecase unit tests', () => {
   let usecase: ImportOrdersFromFileUsecase;
@@ -32,6 +34,8 @@ describe('ImportOrdersFromFileUsecase unit tests', () => {
         ]),
       ],
       providers: [
+        OrdersRepository,
+        OrderProductsRepository,
         ImportOrdersFromFileUsecase,
         GetOrdersUsecase,
         {

@@ -40,8 +40,6 @@ describe('FilesService', () => {
   it('should transformOrdersFileToJson correctly', () => {
     const orders = service.transformOrdersFileToJson(mockFile as any);
 
-    console.log(JSON.stringify(orders));
-
     expect(orders).toEqual([
       {
         userId: 70,
@@ -82,7 +80,7 @@ describe('FilesService', () => {
     const fileHash = service.hashOrdersFile(mockFile as any);
 
     expect(fileHash).toBe(
-      '5b22821b6f0e192fb650cc7166878ba51c5dba4dc500c3bada2dc763eae1adba', // Expected hash for the test file
+      '5b22821b6f0e192fb650cc7166878ba51c5dba4dc500c3bada2dc763eae1adba',
     );
   });
 

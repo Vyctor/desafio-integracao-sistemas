@@ -1,3 +1,4 @@
+import { OrdersRepository } from './repositories/orders.repository';
 import { Module } from '@nestjs/common';
 import { OrdersController } from './orders.controller';
 import { ConfigModule } from '@nestjs/config';
@@ -8,6 +9,7 @@ import { ImportOrdersFromFileUsecase } from './usecases/import-orders-from-file.
 import { GetOrdersUsecase } from './usecases/get-orders.usecase';
 import { CustomersModule } from '../customers/customers.module';
 import { CommonsModule } from '../commons/commons.module';
+import { OrderProductsRepository } from './repositories/order-products.repository';
 
 @Module({
   imports: [
@@ -16,7 +18,12 @@ import { CommonsModule } from '../commons/commons.module';
     CommonsModule,
     TypeOrmModule.forFeature([Orders, OrderProducts]),
   ],
-  providers: [ImportOrdersFromFileUsecase, GetOrdersUsecase],
+  providers: [
+    OrdersRepository,
+    OrderProductsRepository,
+    ImportOrdersFromFileUsecase,
+    GetOrdersUsecase,
+  ],
   controllers: [OrdersController],
   exports: [],
 })

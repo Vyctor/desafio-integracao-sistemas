@@ -13,7 +13,6 @@ import { Customers } from '../../customers/entities/customer.entity';
 @Entity({
   name: 'orders',
 })
-//sort desc
 @Index(['date'])
 export class Orders {
   @PrimaryColumn()
