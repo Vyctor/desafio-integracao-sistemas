@@ -67,6 +67,7 @@ describe('OrdersController', () => {
             hashOrdersFile: jest.fn().mockReturnValue('test-hash'),
             validateIfFileAlreadyImported: jest.fn(),
             transformOrdersFileToJson: jest.fn().mockReturnValue(mockOrders),
+            saveFileHash: jest.fn(),
           },
         },
         {

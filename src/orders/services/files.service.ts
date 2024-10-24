@@ -80,4 +80,11 @@ export class FilesService {
     }
     this.logger.log('Arquivo não importado anteriormente');
   }
+
+  public async saveFileHash(fileHash: string, filename: string): Promise<void> {
+    await this.datasource.getRepository(IntegrationControl).save({
+      hash: fileHash,
+      filename,
+    });
+  }
 }

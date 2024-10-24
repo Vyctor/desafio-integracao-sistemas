@@ -12,7 +12,7 @@ describe('FilesService', () => {
 
   const mockFile = {
     buffer: readFileSync(
-      join(__dirname, '..', '..', '__tests__', 'files', 'unit_tests.txt'),
+      join(__dirname, '..', '..', '..', '__tests__', 'files', 'unit_tests.txt'),
     ),
     originalname: 'unit_tests.txt',
   };
