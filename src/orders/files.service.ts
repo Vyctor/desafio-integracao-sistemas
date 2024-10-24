@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { createHash } from 'crypto';
 import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -15,7 +15,8 @@ export type FileToJsonContent = Array<{
 
 @Injectable()
 export class FilesService {
-  logger: any;
+  private readonly logger = new Logger(FilesService.name);
+
   constructor(
     @InjectDataSource()
     private readonly datasource: DataSource,
