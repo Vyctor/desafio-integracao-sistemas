@@ -41,6 +41,7 @@ export class OrdersController {
   })
   @UseInterceptors(FileInterceptor('file'))
   async process(@UploadedFile() file: Express.Multer.File) {
+    console.log(file);
     const fileExtension = this.filesService.getFileExtension(file);
     if (fileExtension !== 'txt') {
       throw new UnprocessableEntityException(
