@@ -8,7 +8,7 @@ import { ImportOrdersFromFileUsecase } from './usecases/import-orders-from-file.
 import { GetOrdersUsecase } from './usecases/get-orders.usecase';
 import { Customers } from './entities/customer.entity';
 import { IntegrationControl } from './entities/integration-control.entity';
-import { FilesService } from './files.service';
+import { FilesService } from './services/files.service';
 
 @Module({
   imports: [

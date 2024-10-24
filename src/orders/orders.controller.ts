@@ -14,7 +14,7 @@ import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GetOrdersDto } from './dtos/get-orders.dto';
 import { ImportOrdersDto } from './dtos/import-orders.dto';
 import { GetOrdersResponseDto } from './dtos/get-orders-response.dto';
-import { FilesService } from '../orders/files.service';
+import { FilesService } from './services/files.service';
 import { OrderTransform } from './transforms/order.transform';
 
 @Controller('orders')

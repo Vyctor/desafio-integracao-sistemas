@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { FilesService } from './files.service';
 import { DataSource } from 'typeorm';
-import { IntegrationControl } from '../orders/entities/integration-control.entity';
+import { IntegrationControl } from '../entities/integration-control.entity';
 import { ConflictException } from '@nestjs/common';
 import { readFileSync } from 'fs';
 import { join } from 'path';
