@@ -60,8 +60,6 @@ describe('ImportOrdersFromFileUsecase unit tests', () => {
   });
 
   it('should import orders from file', async () => {
-    const managerSpy = jest.spyOn(usecase, 'execute');
-
     const createOrdersPayload = {
       orders: [
         {
