@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Query,
+  UnprocessableEntityException,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -13,6 +14,7 @@ import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GetOrdersDto } from './dtos/get-orders.dto';
 import { ImportOrdersDto } from './dtos/import-orders.dto';
 import { GetOrdersResponseDto } from './dtos/get-orders-response.dto';
+import { FilesService } from 'src/orders/files.service';
 
 @Controller('orders')
 @ApiTags('orders')
@@ -20,6 +22,7 @@ export class OrdersController {
   constructor(
     private readonly importOrdersFromFileUsecase: ImportOrdersFromFileUsecase,
     private readonly getOrdersUsecase: GetOrdersUsecase,
+    private readonly filesService: FilesService,
   ) {}
 
   @Post('import')
@@ -37,7 +40,18 @@ export class OrdersController {
   })
   @UseInterceptors(FileInterceptor('file'))
   async process(@UploadedFile() file: Express.Multer.File) {
-    await this.importOrdersFromFileUsecase.execute(file);
+    const fileExtension = this.filesService.getFileExtension(file);
+    if (fileExtension !== 'txt') {
+      throw new UnprocessableEntityException(
+        'Formato de arquivo inválido. Aceito apenas arquivos .txt',
+      );
+    }
+    const fileHash = this.filesService.hashOrdersFile(file);
+    await this.filesService.validateIfFileAlreadyImported(fileHash);
+    const data = this.filesService.transformOrdersFileToJson(file);
+    await this.importOrdersFromFileUsecase.execute({
+      orders: data,
+    });
     return {
       message: 'Importação realizada com sucesso',
     };
