@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Orders } from '../entities/order.entity';
 import { OrderProducts } from '../entities/order-products.entity';
-import { IntegrationControl } from '../entities/integration-control.entity';
+import { IntegrationControl } from '../../integration-control/entities/integration-control.entity';
 import { ImportOrdersFromFileUsecase } from './import-orders-from-file.usecase';
 import { GetOrdersUsecase } from './get-orders.usecase';
 import { DataSource } from 'typeorm';

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OrdersController } from './orders.controller';
 import { ImportOrdersFromFileUsecase } from './usecases/import-orders-from-file.usecase';
 import { GetOrdersUsecase } from './usecases/get-orders.usecase';
-import { FilesService } from './services/files.service';
+import { FilesService } from '../commons/files.service';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { join } from 'path';
 import { readFileSync } from 'fs';

@@ -1,8 +1,6 @@
 import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { createHash } from 'crypto';
-import { DataSource } from 'typeorm';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { IntegrationControl } from '../entities/integration-control.entity';
+import { IntegrationControlRepository } from '../integration-control/integration-control.repository';
 
 export type FileToJsonContent = Array<{
   userId: number;
@@ -18,8 +16,7 @@ export class FilesService {
   private readonly logger = new Logger(FilesService.name);
 
   constructor(
-    @InjectDataSource()
-    private readonly datasource: DataSource,
+    private readonly integrationControlRepository: IntegrationControlRepository,
   ) {}
 
   public transformOrdersFileToJson(
@@ -59,13 +56,8 @@ export class FilesService {
   }
 
   public async validateIfFileAlreadyImported(fileHash: string): Promise<void> {
-    const fileAlreadyImported = await this.datasource
-      .getRepository(IntegrationControl)
-      .findOne({
-        where: {
-          hash: fileHash,
-        },
-      });
+    const fileAlreadyImported =
+      await this.integrationControlRepository.findOneByHash(fileHash);
 
     if (fileAlreadyImported) {
       const errorMessage = `Arquivo já importado na data de ${fileAlreadyImported.createdAt.toISOString()} com o nome de ${fileAlreadyImported.filename}`;
@@ -82,9 +74,10 @@ export class FilesService {
   }
 
   public async saveFileHash(fileHash: string, filename: string): Promise<void> {
-    await this.datasource.getRepository(IntegrationControl).save({
+    const integrationControl = this.integrationControlRepository.create({
       hash: fileHash,
       filename,
     });
+    await this.integrationControlRepository.save(integrationControl);
   }
 }

@@ -15,7 +15,7 @@ import { GetOrdersDto } from './dtos/get-orders.dto';
 import { ImportOrdersDto } from './dtos/import-orders.dto';
 import { GetOrdersResponseDto } from './dtos/get-orders-response.dto';
 import { OrderTransform } from './transforms/order.transform';
-import { FilesService } from './services/files.service';
+import { FilesService } from '../commons/files.service';
 
 @Controller('orders')
 @ApiTags('orders')

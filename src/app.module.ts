@@ -4,6 +4,8 @@ import { ConfigModule } from './config/config.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EnvironmentService } from './config/environment.service';
 import { CustomersModule } from './customers/customers.module';
+import { IntegrationControlModule } from './integration-control/integration-control.module';
+import { CommonsModule } from './commons/commons.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { CustomersModule } from './customers/customers.module';
     }),
     OrdersModule,
     CustomersModule,
+    IntegrationControlModule,
+    CommonsModule,
   ],
   controllers: [],
   providers: [],

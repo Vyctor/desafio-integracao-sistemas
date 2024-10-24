@@ -6,17 +6,17 @@ import { Orders } from './entities/order.entity';
 import { OrderProducts } from './entities/order-products.entity';
 import { ImportOrdersFromFileUsecase } from './usecases/import-orders-from-file.usecase';
 import { GetOrdersUsecase } from './usecases/get-orders.usecase';
-import { IntegrationControl } from './entities/integration-control.entity';
-import { FilesService } from './services/files.service';
 import { CustomersModule } from '../customers/customers.module';
+import { CommonsModule } from '../commons/commons.module';
 
 @Module({
   imports: [
     ConfigModule,
     CustomersModule,
-    TypeOrmModule.forFeature([Orders, OrderProducts, IntegrationControl]),
+    CommonsModule,
+    TypeOrmModule.forFeature([Orders, OrderProducts]),
   ],
-  providers: [ImportOrdersFromFileUsecase, GetOrdersUsecase, FilesService],
+  providers: [ImportOrdersFromFileUsecase, GetOrdersUsecase],
   controllers: [OrdersController],
   exports: [],
 })
