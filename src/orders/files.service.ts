@@ -2,7 +2,7 @@ import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { createHash } from 'crypto';
 import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { IntegrationControl } from 'src/orders/entities/integration-control.entity';
+import { IntegrationControl } from '../orders/entities/integration-control.entity';
 
 export type FileToJsonContent = Array<{
   userId: number;
