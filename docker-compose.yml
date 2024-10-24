@@ -5,7 +5,7 @@ services:
     build: .
     container_name: orders-api
     environment:
-      NODE_ENV: local
+      NODE_ENV: production
       DB_TYPE: postgres
       DB_URL: postgres
       DB_PORT: 5432
@@ -15,8 +15,6 @@ services:
     restart: unless-stopped
     ports:
       - '3000:3000'
-    volumes:
-      - .:/usr/src/app
     depends_on:
       postgres:
         condition: service_healthy

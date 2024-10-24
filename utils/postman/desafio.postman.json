@@ -1,0 +1,76 @@
+{
+	"info": {
+		"_postman_id": "103fd972-bedd-4291-8bfe-639f7284e119",
+		"name": "Desafio Magalu",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11792271"
+	},
+	"item": [
+		{
+			"name": "Process Orders",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/vvguimaraes/projects/desafio-integracao-sistemas/payloads/250_000-items.txt"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/orders/import",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"orders",
+						"import"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Orders",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"orders"
+					],
+					"query": [
+						{
+							"key": "min_date",
+							"value": "2015-01-01",
+							"disabled": true
+						},
+						{
+							"key": "max_date",
+							"value": "2015-02-02",
+							"disabled": true
+						},
+						{
+							"key": "order_id",
+							"value": "431409120",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
