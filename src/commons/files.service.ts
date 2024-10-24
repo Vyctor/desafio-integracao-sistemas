@@ -70,7 +70,6 @@ export class FilesService {
       );
       throw new ConflictException(errorMessage);
     }
-    this.logger.log('Arquivo não importado anteriormente');
   }
 
   public async saveFileHash(fileHash: string, filename: string): Promise<void> {
